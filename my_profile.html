@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile - Prithwin K R</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About Me</a></li>
+                <li><a href="#portfolio">Portfolio</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section (Home) -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <img src="profile-pic.jpg" alt="Prithwin K R" class="profile-pic">
+            <h1>Prithwin K R</h1>
+            <p>Software Developer | Web Enthusiast</p>
+            <a href="#contact" class="cta-button">Get in Touch</a>
+        </div>
+    </section>
+
+    <!-- About Me Section -->
+    <section id="about">
+        <h2>About Me</h2>
+        <p>Hi! I'm Prithwin K R, a passionate software developer with a love for web development. Currently, I am pursuing my Computer Science Degree in JSS Science and Technology University, Mysuru, Karnataka-570006.</p>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio">
+        <h2>Latest Projects</h2>
+        <div class="portfolio-grid">
+            <div class="portfolio-item">
+                <img src="project1.jpg" alt="Project 1">
+                <h3>Personal Portfolio</h3>
+                <p>A portfolio website to showcase my skills and projects.</p>
+                <a href="https://github.com/johndoe/project1" target="_blank">View Project</a>
+            </div>
+            <div class="portfolio-item">
+                <img src="project2.jpg" alt="Project 2">
+                <h3>Hotel Management App</h3>
+                <p>A simple app to manage hotel tasks and bookings effectively.</p>
+                <a href="https://github.com/johndoe/project2" target="_blank">View Project</a>
+            </div>
+            <div class="portfolio-item">
+                <img src="project3.jpg" alt="Project 3">
+                <h3>Door Step</h3>
+                <p>A website which provides online household services.</p>
+                <a href="https://github.com/johndoe/project3" target="_blank">View Project</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <h2>Contact Me</h2>
+        <form action="https://formsubmit.co/prithwinkr19@gmail.com" method="POST" class="contact-form">
+            <input type="text" name="name" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Your Email" required>
+            <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+        
+            <!-- optional: prevent spam -->
+            <input type="hidden" name="_captcha" value="false">
+            
+            <!-- optional: redirect after submission -->
+            <input type="hidden" name="_next" value="https://your-website.com/thank-you.html">
+        
+            <button type="submit" class="cta-button">Send Message</button>
+        </form>
+        
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Prithwin K R. All rights reserved.</p>
+    </footer>
+</body>
+
+</html>
