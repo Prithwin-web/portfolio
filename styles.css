@@ -15,9 +15,11 @@ body {
 /* Navigation Bar */
 header {
   background-color: #000000;
-  padding: 10px 0;
+  padding: 20px 400px;
+  background-color: #d6d6d6; /* Just to show the padding */
+  border-radius: 40px; /* This gives the curve */
   position: fixed;
-  width: 100%;
+  
   top: 0;
   left: 0;
   z-index: 100;
@@ -35,26 +37,27 @@ nav ul li {
 }
 
 nav ul li a {
-  color: #fff;
+  color: #000000;
   text-decoration: none;
   font-size: 1.1rem;
   padding: 10px;
 }
 
 nav ul li a:hover {
-  background-color: #ffffff;
-  color: #000000;
+  background-color: #000000;
+  color: #ffffff;
   box-shadow: 0 0 15px 0px rgb(231, 231, 231);
   border-radius: 5px;
 }
 
 /* Hero Section */
 .hero {
+  border-radius: 70px;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(45deg, #0980a4, #fefefe);
+  background: linear-gradient(90deg, #9b47cf, #490a7d);
   text-align: center;
   color: #fff;
 }
@@ -81,18 +84,20 @@ nav ul li a:hover {
 }
 
 .cta-button {
+  border-radius: 20px;
   display: inline-block;
   padding: 10px 20px;
   margin-top: 20px;
-  background-color: #37dc1a;
-  color: white;
+  background-color: #ffffff;
+  color: rgb(2, 2, 2);
   text-decoration: none;
   border-radius: 5px;
   font-size: 1rem;
 }
 
 .cta-button:hover {
-  background-color: #05e745;
+  background-color: #776387;
+  color: #ffffff;
   box-shadow: 0 0 5px 0px rgb(231, 231, 231);
 }
 
@@ -165,13 +170,15 @@ nav ul li a:hover {
 
 /* Contact Section */
 #contact {
+  border-radius: 20px;
+  background: linear-gradient(90deg, #073e90, #4198db);
   padding: 60px 20px;
-  background-color: #fff;
+
   text-align: center;
 }
 
-#contact.h2 {
-  color: #000000;
+#contact.h1 {
+  color: #ffffff;
 }
 
 .contact-form {
@@ -193,18 +200,18 @@ nav ul li a:hover {
 }
 
 .contact-form button {
-  background-color: #2ecc71;
-  color: white;
-  padding: 9px 180px;
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  padding: 9px 120px;
   border: none;
-  border-radius: 5px;
+  border-radius: 20px;
   font-size: 1.2rem;
   cursor: pointer;
 }
 
 .contact-form button:hover {
-  background-color: #27ae60;
-  box-shadow: 0 0 5px 1px rgb(130, 237, 130);
+  background-color: #313030;
+  box-shadow: 0 0 5px 1px rgb(255, 255, 255);
 
 }
 
@@ -241,24 +248,4 @@ footer p {
   .contact-form {
       width: 100%;
   }
-
-  .cta-button {
-  background-color: #2ecc71;
-  color: white;
-  padding: 9px 180px;
-  border: none;
-  border-radius: 5px;
-  font-size: 1.2rem;
-  cursor: pointer;
-  display: inline-block;
-  margin-top: 20px;
-  text-align: center;
-  text-decoration: none;
-}
-
-.cta-button:hover {
-  background-color: #27ae60;
-  box-shadow: 0 0 5px 1px rgb(130, 237, 130);
-}
-
 }
