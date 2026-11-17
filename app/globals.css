@@ -100,21 +100,21 @@
       color 0.45s ease;
   }
 
+  /* Chalk smudges scroll with the page as a repeating tile. (A fixed background
+     forced a full-screen repaint on every scroll frame and made this theme lag.) */
   [data-theme="chalkboard"] body {
-    /* chalk smudges over a faint grid */
     background-image:
-      radial-gradient(60% 40% at 15% 10%, rgb(255 255 255 / 0.05), transparent 70%),
-      radial-gradient(50% 35% at 85% 55%, rgb(255 255 255 / 0.04), transparent 70%),
-      radial-gradient(45% 30% at 30% 90%, rgb(255 255 255 / 0.035), transparent 70%),
+      radial-gradient(38% 22% at 18% 12%, rgb(255 255 255 / 0.05), transparent 70%),
+      radial-gradient(32% 20% at 82% 48%, rgb(255 255 255 / 0.04), transparent 70%),
+      radial-gradient(30% 18% at 35% 86%, rgb(255 255 255 / 0.035), transparent 70%),
       linear-gradient(var(--grid) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid) 1px, transparent 1px);
     background-size:
-      100% 100%,
-      100% 100%,
-      100% 100%,
+      1400px 1800px,
+      1400px 1800px,
+      1400px 1800px,
       28px 28px,
       28px 28px;
-    background-attachment: fixed, fixed, fixed, scroll, scroll;
   }
 
   ::selection {
