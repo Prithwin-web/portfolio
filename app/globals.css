@@ -1,26 +1,868 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Theme lives on <html data-theme="notebook|chalkboard">, set before paint in layout.tsx */
+@custom-variant dark (&:where([data-theme="chalkboard"], [data-theme="chalkboard"] *));
+
+/* ============ Tokens ============ */
+/* Notebook: crisp graph paper, ballpoint ink, highlighters and sticky notes */
+:root,
+[data-theme="notebook"] {
+  color-scheme: light;
+  --paper: #fbfcff;
+  --paper-2: #eef2fd;
+  --grid: rgb(72 108 214 / 0.11);
+  --grid-strong: rgb(72 108 214 / 0.2);
+  --margin-line: rgb(234 84 96 / 0.45);
+  --ink: #1c2340;
+  --ink-soft: #4b5375;
+  --line: #1c2340;
+  --card: #ffffff;
+  --card-2: #f5f7ff;
+  --shadow-ink: #1c2340;
+  --accent: #2f5bea; /* ballpoint blue */
+  --accent-ink: #ffffff;
+  --yellow: #ffd84d;
+  --pink: #ff8fb1;
+  --blue: #8fb5ff;
+  --mint: #6ee7b7;
+  --note-ink: #1c2340;
+  --hl: rgb(255 216 77 / 0.75);
+  --chalk-dust: none;
+}
+
+/* Chalkboard: green slate, chalk lines, the same sticky notes pinned on it */
+[data-theme="chalkboard"] {
+  color-scheme: dark;
+  --paper: #1d2a25;
+  --paper-2: #24332d;
+  --grid: rgb(236 240 230 / 0.045);
+  --grid-strong: rgb(236 240 230 / 0.08);
+  --margin-line: rgb(255 179 199 / 0.22);
+  --ink: #f1f0e6;
+  --ink-soft: #b8c4bc;
+  --line: rgb(241 240 230 / 0.82);
+  --card: #263630;
+  --card-2: #2c3d36;
+  --shadow-ink: rgb(0 0 0 / 0.38);
+  --accent: #ffe58a; /* yellow chalk */
+  --accent-ink: #1d2a25;
+  --yellow: #ffe17a;
+  --pink: #ffa9c2;
+  --blue: #a9c8ff;
+  --mint: #93edc6;
+  --note-ink: #1c2340;
+  --hl: rgb(255 229 138 / 0.28);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-card: var(--card);
+  --color-card-2: var(--card-2);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-yellow: var(--yellow);
+  --color-pink: var(--pink);
+  --color-blue: var(--blue);
+  --color-mint: var(--mint);
+  --color-note-ink: var(--note-ink);
+  --font-sans: var(--font-bricolage), "Segoe UI", system-ui, sans-serif;
+  --font-hand: var(--font-kalam), "Comic Sans MS", cursive;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ============ Base ============ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    background: var(--paper);
+  }
+
+  body {
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    background-color: var(--paper);
+    /* graph paper */
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-position: -1px -1px;
+    overflow-x: hidden;
+    overflow-x: clip;
+    transition:
+      background-color 0.45s ease,
+      color 0.45s ease;
+  }
+
+  [data-theme="chalkboard"] body {
+    /* chalk smudges over a faint grid */
+    background-image:
+      radial-gradient(60% 40% at 15% 10%, rgb(255 255 255 / 0.05), transparent 70%),
+      radial-gradient(50% 35% at 85% 55%, rgb(255 255 255 / 0.04), transparent 70%),
+      radial-gradient(45% 30% at 30% 90%, rgb(255 255 255 / 0.035), transparent 70%),
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size:
+      100% 100%,
+      100% 100%,
+      100% 100%,
+      28px 28px,
+      28px 28px;
+    background-attachment: fixed, fixed, fixed, scroll, scroll;
+  }
+
+  ::selection {
+    background: var(--yellow);
+    color: var(--note-ink);
+  }
+
+  section[id] {
+    scroll-margin-top: 5.5rem;
+  }
+
+  :focus-visible {
+    outline: 3px dashed var(--accent);
+    outline-offset: 4px;
+    border-radius: 8px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ============ Components ============ */
+@layer components {
+  .font-hand {
+    font-family: var(--font-hand);
+  }
+
+  /* notebook margin line on wide screens */
+  .margin-line {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: max(1.25rem, calc(50% - 39rem));
+    width: 2px;
+    background: var(--margin-line);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Hand-drawn card: wobbly radius, ink border, offset shadow */
+  .sketch {
+    position: relative;
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 18px 26px 16px 24px / 24px 16px 26px 18px;
+    box-shadow: 5px 6px 0 var(--shadow-ink);
+    transition:
+      transform 0.35s cubic-bezier(0.3, 0.7, 0.2, 1.2),
+      box-shadow 0.35s ease,
+      background-color 0.45s ease;
+  }
+
+  .sketch.lift:hover {
+    transform: translate(-3px, -4px) rotate(-0.4deg);
+    box-shadow: 9px 11px 0 var(--shadow-ink);
+  }
+
+  /* washi tape on top of a card */
+  .tape::before {
+    content: "";
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    width: 96px;
+    height: 26px;
+    translate: -50% 0;
+    rotate: var(--tape-r, -3deg);
+    background: color-mix(in oklab, var(--tape, var(--yellow)) 78%, transparent);
+    background-image: repeating-linear-gradient(
+      90deg,
+      rgb(255 255 255 / 0.22) 0 6px,
+      transparent 6px 12px
+    );
+    mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 8px 100%;
+    -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 8px 100%;
+    z-index: 2;
+  }
+
+  /* Sticky note */
+  .note {
+    position: relative;
+    color: var(--note-ink);
+    background: var(--note-bg, var(--yellow));
+    border-radius: 3px 3px 22px 3px;
+    box-shadow:
+      0 1px 0 rgb(0 0 0 / 0.06),
+      6px 12px 18px -10px rgb(20 25 60 / 0.45);
+    rotate: var(--r, 0deg);
+    transition:
+      rotate 0.4s cubic-bezier(0.3, 0.7, 0.2, 1.4),
+      translate 0.4s cubic-bezier(0.3, 0.7, 0.2, 1.4),
+      box-shadow 0.4s ease;
+  }
+
+  .note::after {
+    /* folded corner */
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 0 0 22px 0;
+    background: linear-gradient(135deg, rgb(0 0 0 / 0.12), transparent 60%);
+  }
+
+  .note:hover,
+  .note:focus-within {
+    rotate: 0deg;
+    translate: 0 -6px;
+    box-shadow:
+      0 1px 0 rgb(0 0 0 / 0.06),
+      10px 22px 26px -12px rgb(20 25 60 / 0.5);
+  }
+
+  .note-yellow {
+    --note-bg: var(--yellow);
+  }
+  .note-pink {
+    --note-bg: var(--pink);
+  }
+  .note-blue {
+    --note-bg: var(--blue);
+  }
+  .note-mint {
+    --note-bg: var(--mint);
+  }
+
+  .pin {
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    width: 18px;
+    height: 18px;
+    translate: -50% 0;
+    border-radius: 9999px;
+    background: radial-gradient(circle at 35% 35%, #fff 0 18%, var(--pin, #ea5460) 20%);
+    box-shadow: 1px 3px 3px rgb(0 0 0 / 0.3);
+    z-index: 2;
+  }
+
+  /* Highlighter marker */
+  .hl {
+    background: linear-gradient(
+      100deg,
+      transparent 0.2em,
+      var(--hl) 0.35em,
+      var(--hl) calc(100% - 0.35em),
+      transparent calc(100% - 0.2em)
+    );
+    background-size: 100% 0.62em;
+    background-position: 0 88%;
+    background-repeat: no-repeat;
+    padding: 0 0.12em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  /* project illustrations always sit on a light "sticker sheet" so the ink lines read */
+  .art-panel {
+    background-color: #eef2fd;
+    background-image: radial-gradient(rgb(28 35 64 / 0.12) 1.2px, transparent 1.4px);
+    background-size: 18px 18px;
+  }
+
+  [data-theme="chalkboard"] .art-panel {
+    background-color: #e3e9f6;
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    min-height: 3rem;
+    padding: 0 1.35rem;
+    font-weight: 650;
+    font-size: 1rem;
+    border: 2px solid var(--line);
+    border-radius: 14px 18px 12px 16px / 16px 12px 18px 14px;
+    box-shadow: 4px 4px 0 var(--shadow-ink);
+    white-space: nowrap;
+    transition:
+      transform 0.2s cubic-bezier(0.3, 0.7, 0.2, 1.4),
+      box-shadow 0.2s ease,
+      background-color 0.3s ease;
+  }
+
+  .btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--shadow-ink);
+  }
+
+  .btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 1px 1px 0 var(--shadow-ink);
+  }
+
+  .btn-ink {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .btn-paper {
+    background: var(--card);
+    color: var(--ink);
+  }
+
+  .btn-sticky {
+    background: var(--yellow);
+    color: var(--note-ink);
+  }
+
+  .icon-btn {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 2px solid var(--line);
+    border-radius: 9999px;
+    background: var(--card);
+    color: var(--ink);
+    box-shadow: 3px 3px 0 var(--shadow-ink);
+    transition:
+      transform 0.2s cubic-bezier(0.3, 0.7, 0.2, 1.4),
+      box-shadow 0.2s ease;
+  }
+
+  .icon-btn:hover {
+    transform: translate(-2px, -2px) rotate(-6deg);
+    box-shadow: 5px 5px 0 var(--shadow-ink);
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.7rem;
+    border: 1.5px solid var(--line);
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 550;
+    background: var(--card-2);
+    color: var(--ink);
+  }
+
+  /* ---------- Hand-drawn SVG strokes that draw themselves in ---------- */
+  .draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 1.1s cubic-bezier(0.6, 0, 0.2, 1) var(--draw-delay, 0.25s);
+  }
+
+  [data-visible="true"] .draw,
+  .draw[data-visible="true"] {
+    stroke-dashoffset: 0;
+  }
+
+  /* ---------- Reveal on scroll ---------- */
+  .reveal {
+    opacity: 0;
+    translate: 0 26px;
+    transition:
+      opacity 0.75s cubic-bezier(0.2, 0.7, 0.2, 1),
+      translate 0.75s cubic-bezier(0.2, 0.7, 0.2, 1);
+    transition-delay: var(--delay, 0ms);
+  }
+
+  .reveal[data-visible="true"] {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  /* pop-in for stickers / notes */
+  .pop {
+    opacity: 0;
+    scale: 0.6;
+    transition:
+      opacity 0.5s ease,
+      scale 0.6s cubic-bezier(0.3, 0.7, 0.2, 1.5);
+    transition-delay: var(--delay, 0ms);
+  }
+
+  [data-visible="true"] .pop {
+    opacity: 1;
+    scale: 1;
+  }
+
+  .note.pop {
+    transition:
+      opacity 0.5s ease var(--delay, 0ms),
+      scale 0.6s cubic-bezier(0.3, 0.7, 0.2, 1.5) var(--delay, 0ms),
+      rotate 0.4s cubic-bezier(0.3, 0.7, 0.2, 1.4),
+      translate 0.4s cubic-bezier(0.3, 0.7, 0.2, 1.4),
+      box-shadow 0.4s ease;
+  }
+
+  /* ---------- Hero ---------- */
+  .intro > * {
+    opacity: 0;
+    translate: 0 18px;
+    animation: rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+    animation-delay: calc(var(--i, 0) * 110ms + 100ms);
+  }
+
+  @keyframes rise {
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  .bubble {
+    position: relative;
+    background: var(--card);
+    color: var(--ink);
+    border: 2px solid var(--line);
+    border-radius: 26px 30px 26px 28px / 28px 24px 30px 26px;
+    box-shadow: 4px 5px 0 var(--shadow-ink);
+  }
+
+  .bubble-tail {
+    position: absolute;
+    width: 26px;
+    height: 22px;
+    background: var(--card);
+    border-right: 2px solid var(--line);
+    border-bottom: 2px solid var(--line);
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+    border-bottom-right-radius: 4px;
+  }
+
+  .caret {
+    display: inline-block;
+    width: 2px;
+    height: 1.05em;
+    margin-left: 2px;
+    vertical-align: -0.15em;
+    background: currentColor;
+    animation: caret 1s steps(1) infinite;
+  }
+
+  @keyframes caret {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes wave {
+    0%,
+    100% {
+      rotate: 0deg;
+    }
+    20% {
+      rotate: 18deg;
+    }
+    40% {
+      rotate: -8deg;
+    }
+    60% {
+      rotate: 14deg;
+    }
+    80% {
+      rotate: -4deg;
+    }
+  }
+
+  .hero-underline {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw-in 1s 0.9s cubic-bezier(0.6, 0, 0.2, 1) forwards;
+  }
+
+  @keyframes draw-in {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* character */
+  .doodle-student {
+    cursor: pointer;
+  }
+
+  .doodle-student .head {
+    transform-box: view-box;
+    transform-origin: 260px 262px;
+    transition: transform 0.6s cubic-bezier(0.3, 0.7, 0.2, 1.5);
+  }
+
+  .doodle-student:hover .head,
+  .doodle-student[data-talking="true"] .head {
+    transform: rotate(-4deg);
+  }
+
+  .doodle-student .body-bob {
+    animation: bob 3.2s ease-in-out infinite;
+    transform-box: view-box;
+  }
+
+  .doodle-student .eyelids {
+    transform-box: view-box;
+    transform-origin: 260px 187px;
+    transform: scaleY(0);
+    animation: blink 5s infinite;
+  }
+
+  .doodle-student[data-talking="true"] .mouth {
+    transform-box: fill-box;
+    transform-origin: center top;
+    animation: talk 0.2s ease-in-out infinite alternate;
+  }
+
+  @keyframes talk {
+    to {
+      scale: 1 0.4;
+    }
+  }
+
+  .doodle-student .bulb-glow {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .doodle-student:hover .bulb-glow,
+  .doodle-student[data-talking="true"] .bulb-glow {
+    opacity: 1;
+  }
+
+  .doodle-student .bulb {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: wiggle 4s ease-in-out infinite;
+  }
+
+  .doodle-student .steam {
+    animation: steam 2.6s ease-in-out infinite;
+  }
+
+  .doodle-student .steam.s2 {
+    animation-delay: 1.3s;
+  }
+
+  .doodle-student .hands {
+    animation: type 0.5s ease-in-out infinite alternate;
+    transform-box: view-box;
+  }
+
+  .doodle-student .hands.right {
+    animation-delay: 0.25s;
+  }
+
+  @keyframes bob {
+    50% {
+      transform: translateY(3px);
+    }
+  }
+
+  @keyframes blink {
+    0%,
+    93%,
+    100% {
+      transform: scaleY(0);
+    }
+    95.5% {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes steam {
+    0% {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    40% {
+      opacity: 0.6;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-14px);
+    }
+  }
+
+  @keyframes type {
+    to {
+      transform: translateY(-3px);
+    }
+  }
+
+  @keyframes wiggle {
+    0%,
+    100% {
+      rotate: -6deg;
+    }
+    50% {
+      rotate: 6deg;
+    }
+  }
+
+  /* floating doodles */
+  .float {
+    animation: float 6s ease-in-out infinite;
+    animation-delay: var(--fd, 0s);
+  }
+
+  @keyframes float {
+    50% {
+      translate: 0 -10px;
+      rotate: var(--fr, 6deg);
+    }
+  }
+
+  .spin-slow {
+    animation: spin 14s linear infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  @keyframes spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  /* tape strip marquee */
+  .tape-strip {
+    background: var(--yellow);
+    color: var(--note-ink);
+    border-block: 2px solid var(--line);
+    box-shadow: 0 6px 0 var(--shadow-ink);
+  }
+
+  .marquee {
+    animation: marquee 40s linear infinite;
+  }
+
+  .marquee:hover {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee {
+    to {
+      translate: -50% 0;
+    }
+  }
+
+  /* ---------- Chat ---------- */
+  .chat-q {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border: 2px solid var(--line);
+    border-radius: 20px 20px 6px 20px;
+  }
+
+  .chat-a {
+    background: var(--card);
+    color: var(--ink);
+    border: 2px solid var(--line);
+    border-radius: 20px 20px 20px 6px;
+    box-shadow: 3px 4px 0 var(--shadow-ink);
+  }
+
+  .msg {
+    opacity: 0;
+    translate: 0 12px;
+    scale: 0.96;
+    transition:
+      opacity 0.45s ease,
+      translate 0.45s cubic-bezier(0.3, 0.7, 0.2, 1.3),
+      scale 0.45s cubic-bezier(0.3, 0.7, 0.2, 1.3);
+  }
+
+  .msg[data-shown="true"] {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+
+  .typing span {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin: 0 2px;
+    border-radius: 9999px;
+    background: currentColor;
+    animation: typing-dot 1s ease-in-out infinite;
+  }
+
+  .typing span:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+
+  .typing span:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  @keyframes typing-dot {
+    0%,
+    100% {
+      opacity: 0.3;
+      translate: 0 0;
+    }
+    50% {
+      opacity: 1;
+      translate: 0 -4px;
+    }
+  }
+
+  /* ---------- Skills laptop ---------- */
+  .sticker {
+    transition:
+      scale 0.35s cubic-bezier(0.3, 0.7, 0.2, 1.6),
+      opacity 0.3s ease,
+      rotate 0.35s ease,
+      filter 0.3s ease;
+  }
+
+  .sticker:hover {
+    scale: 1.12;
+    rotate: 0deg !important;
+  }
+
+  [data-active] .sticker[data-dim="true"] {
+    opacity: 0.28;
+    filter: grayscale(0.7);
+  }
+
+  [data-active] .sticker[data-dim="false"] {
+    scale: 1.08;
+  }
+
+  /* ---------- Learning path ---------- */
+  .path-dash {
+    stroke-dasharray: 10 12;
+  }
+
+  /* ---------- Contact plane ---------- */
+  .plane-fly {
+    offset-path: path("M -40 120 C 120 20, 260 200, 420 90 S 700 40, 900 140");
+    offset-rotate: auto;
+    animation: fly 9s ease-in-out infinite;
+  }
+
+  @keyframes fly {
+    0% {
+      offset-distance: 0%;
+      opacity: 0;
+    }
+    8% {
+      opacity: 1;
+    }
+    92% {
+      opacity: 1;
+    }
+    100% {
+      offset-distance: 100%;
+      opacity: 0;
+    }
+  }
+
+  .btn .plane-icon {
+    transition: translate 0.35s cubic-bezier(0.3, 0.7, 0.2, 1.4);
+  }
+
+  .btn:hover .plane-icon {
+    translate: 4px -4px;
+  }
+
+  /* Mobile menu */
+  .mobile-menu {
+    transition:
+      opacity 0.25s ease,
+      translate 0.35s cubic-bezier(0.3, 0.7, 0.2, 1.3),
+      visibility 0.35s;
+  }
+
+  .mobile-menu[data-open="true"] {
+    transition:
+      opacity 0.25s ease,
+      translate 0.35s cubic-bezier(0.3, 0.7, 0.2, 1.3),
+      visibility 0s;
+  }
+
+  .mobile-menu[data-open="false"] {
+    opacity: 0;
+    translate: 0 -12px;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  /* Toast */
+  .toast {
+    transition:
+      opacity 0.3s ease,
+      translate 0.3s cubic-bezier(0.3, 0.7, 0.2, 1.3);
+  }
+
+  .toast[data-show="false"] {
+    opacity: 0;
+    translate: -50% 14px;
+    pointer-events: none;
+  }
+
+  .toast[data-show="true"] {
+    translate: -50% 0;
+  }
+}
+
+/* Theme switch: page wipes in from the toggle */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* ============ Reduced motion ============ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+  }
+  .reveal,
+  .intro > *,
+  .msg,
+  .pop {
+    opacity: 1 !important;
+    translate: none !important;
+    scale: none !important;
+  }
+  .draw,
+  .hero-underline {
+    stroke-dashoffset: 0 !important;
+  }
+  .plane-fly {
+    display: none;
+  }
 }
