@@ -66,15 +66,14 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#1d2a25" },
-    { media: "(prefers-color-scheme: light)", color: "#fbfcff" },
-  ],
+  themeColor: "#fbfcff",
 };
 
 // Runs before first paint so the saved / system theme is applied without a flash.
-// "notebook" = light, "chalkboard" = dark. Falls back to the visitor's system setting.
-const themeScript = `(function(){try{var t=localStorage.getItem('theme');if(t!=='notebook'&&t!=='chalkboard'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'chalkboard':'notebook'}document.documentElement.setAttribute('data-theme',t)}catch(e){document.documentElement.setAttribute('data-theme','notebook')}})();`;
+// Every visit opens in the light "notebook" theme. Visitors can still switch
+// to the dark "chalkboard" theme with the toggle; that choice lasts for the visit.
+// This also clears any older saved choice so nobody gets stuck in dark mode.
+const themeScript = `try{localStorage.removeItem('theme')}catch(e){}document.documentElement.setAttribute('data-theme','notebook');`;
 
 const personJsonLd = {
   "@context": "https://schema.org",

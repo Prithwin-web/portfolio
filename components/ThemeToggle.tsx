@@ -26,12 +26,8 @@ export default function ThemeToggle() {
   const next: Theme = isBoard ? "notebook" : "chalkboard";
 
   const apply = (value: Theme) => {
+    // Not saved: every new visit starts in the light notebook theme.
     document.documentElement.setAttribute("data-theme", value);
-    try {
-      localStorage.setItem("theme", value);
-    } catch {
-      /* storage blocked: the theme still applies for this visit */
-    }
   };
 
   const onClick = (e: MouseEvent<HTMLButtonElement>) => {
